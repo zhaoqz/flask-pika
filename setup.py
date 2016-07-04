@@ -22,8 +22,8 @@ setup(
     py_modules=['flask_pika'],
     platforms='any',
     install_requires=[
-        'Flask>=0.7',
-        'pika==0.9.14'
+        'Flask==0.10.1',
+        'pika>=0.10'
     ],
     classifiers=[
         'Environment :: Web Environment',

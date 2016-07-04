@@ -1,8 +1,7 @@
 import datetime
 import pika
 import warnings
-
-from Queue import Queue
+from six.moves.queue import Queue
 
 __all__ = ['Pika']
 
@@ -21,8 +20,8 @@ class Pika(object):
         """
             Initialize the Flask Pika extension
         """
-        pika_params = app.config['FLASK_PIKA_PARAMS']
-        pool_params = app.config['FLASK_PIKA_POOL_PARAMS']
+        pika_url = app.config.get('FLASK_PIKA_URI', 'amqp://guest:guest@localhost:5672/')
+        pool_params = app.config.get('FLASK_PIKA_POOL_PARAMS')
 
         self.debug = app.debug
         self.logger = app.logger
@@ -31,13 +30,8 @@ class Pika(object):
         self.pool_queue = Queue()
         self.channel_recycle_times = {}
 
-        # fix create credentials if needed
-        if 'credentials' not in pika_params:
-            pika_params['credentials'] = pika.PlainCredentials(pika_params['username'], pika_params['password'])
-            del pika_params['username']
-            del pika_params['password']
+        self._pika_connection_params = pika.URLParameters(pika_url)
 
-        self._pika_connection_params = pika.ConnectionParameters(**pika_params)
         self.__DEBUG("Connection params are %s" % self._pika_connection_params)
 
         # setup pooling if requested
@@ -70,7 +64,7 @@ class Pika(object):
         try:
             channel.connection.close()
             self.__DEBUG("Destroyed AMQP Connection and Channel %s" % channel)
-        except Exception, e:
+        except Exception as e:
             self.__WARN("Failed to destroy channel cleanly %s" % e)
 
 
