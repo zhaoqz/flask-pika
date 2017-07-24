@@ -1,9 +1,12 @@
 import datetime
 import pika
 import warnings
+import logging
 from six.moves.queue import Queue
 
 __all__ = ['Pika']
+
+logger = logging.getLogger(__name__)
 
 class Pika(object):
 
@@ -24,7 +27,7 @@ class Pika(object):
         pool_params = app.config.get('FLASK_PIKA_POOL_PARAMS')
 
         self.debug = app.debug
-        self.logger = app.logger
+        self.logger = logger
         self.pool_size = 1
         self.pool_recycle = -1
         self.pool_queue = Queue()
